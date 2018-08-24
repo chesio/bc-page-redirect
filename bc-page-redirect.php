@@ -3,7 +3,7 @@
  * Plugin Name: BC Page Redirect
  * Plugin URI: https://github.com/chesio/bc-page-redirect
  * Description: Let a page redirect to its first subpage, any other page or external URL.
- * Version: 1.0.0
+ * Version: develop
  * Author: Česlav Przywara <ceslav@przywara.cz>
  * Author URI: https://www.chesio.com
  * Requires PHP: 7.0
