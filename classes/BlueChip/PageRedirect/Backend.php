@@ -30,7 +30,7 @@ class Backend
     public function displayPostStates(array $post_states, \WP_Post $post): array
     {
         if (('page' === $post->post_type) && Core::hasRedirect($post->ID)) {
-            $post_states['bc-page-redirect'] = Core::getRedirectLabel($post->ID);
+            $post_states['bc-page-redirect'] = Core::getRedirectName($post->ID);
         }
         return $post_states;
     }
@@ -44,7 +44,7 @@ class Backend
      * @param int $post_id
      * @return string
      */
-    public function filterPageLink(string $link, int $post_id)
+    public function filterPageLink(string $link, int $post_id): string
     {
         return empty($location = Core::getRedirectLocation($post_id)) ? $link : $location;
     }
