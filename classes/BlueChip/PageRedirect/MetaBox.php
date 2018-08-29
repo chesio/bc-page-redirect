@@ -20,17 +20,7 @@ class MetaBox
     /**
      * @var string
      */
-    const REDIRECT_TYPE_FIELD_ID = 'bc-page-redirect-type';
-
-    /**
-     * @var string
-     */
     const REDIRECT_TYPE_FIELD_NAME = 'bc-page-redirect-type';
-
-    /**
-     * @var string
-     */
-    const REDIRECT_VALUE_FIELD_NAME = 'bc-page-redirect-value';
 
 
     /**
@@ -85,45 +75,35 @@ class MetaBox
     {
         wp_nonce_field(self::NONCE_ACTION, self::NONCE_NAME);
 
-        // Grab list of all pages, index them by ID.
-        $pages = self::indexPostsById(get_pages(['sort_column' => 'menu_order']));
-
-        $redirect_type = Persistence::getRedirectType($post->ID);
-        $redirect_value = Persistence::getRedirectValue($post->ID, $redirect_type);
-
-        $custom_page_id = $redirect_type === Type::CUSTOM_PAGE ? $redirect_value : 0;
-        $custom_url = $redirect_type === Type::CUSTOM_URL ? $redirect_value : '';
+        $redirects = RedirectFactory::getAll();
+        $current_redirect = Persistence::getRedirect($post->ID);
+        $current_redirect_type_id = is_object($current_redirect) ? $current_redirect->getTypeId() : '';
 
         ?>
         <div id="bc-page-redirect-meta-box">
             <p>
                 <label for="bc-page-redirect-type"><?= esc_html('Redirect type:', 'bc-page-redirect'); ?></label><br />
                 <select name="<?= self::REDIRECT_TYPE_FIELD_NAME; ?>" id="bc-page-redirect-type">
-                    <option value=""><?= esc_html('No redirect', 'bc-page-redirect'); ?></option>
-                    <?php foreach (Type::getAll(true) as $type => $label) { ?>
-                        <option value="<?= esc_attr($type); ?>" <?= selected($redirect_type, $type, false); ?>>
-                            <?= esc_html($label); ?>
+                    <option value=""><?= esc_html(__('No redirect', 'bc-page-redirect')); ?></option>
+                    <?php foreach ($redirects as $type_id => $redirect) { ?>
+                        <option value="<?= esc_attr($type_id); ?>" <?= selected($current_redirect_type_id, $type_id, false); ?>>
+                            <?= esc_html($redirect->getShortName()); ?>
                         </option>
                     <?php } ?>
                 </select>
             </p>
 
-            <p class="js-bc-redirect-value">
-                <label for="bc-page-redirect-custom-page"><?= esc_html('Page to redirect to:', 'bc-page-redirect'); ?></label><br />
-                <select name="<?= self::REDIRECT_VALUE_FIELD_NAME; ?>" id="bc-page-redirect-custom-page" <?= $redirect_type === Type::CUSTOM_PAGE ? '' : 'disabled="disabled"'; ?> data-bc-redirect-value-for-type="<?= esc_attr(Type::CUSTOM_PAGE); ?>">
-                    <?php foreach ($pages as $page_id => $page) { ?>
-                        <option value="<?= esc_attr($page_id); ?>" <?= selected($custom_page_id, $page_id, false); ?>>
-                            <?= self::indent($page, $pages); ?> <?= esc_html($page->post_title); ?>
-                        </option>
-                    <?php } ?>
-                </select>
-            </p>
-
-            <p class="js-bc-redirect-value">
-                <label for="bc-page-redirect-custom-url"><?= esc_html('URL to redirect to:', 'bc-page-redirect'); ?></label><br />
-                <input type="text" name="<?= self::REDIRECT_VALUE_FIELD_NAME; ?>" id="bc-page-redirect-custom-url" value="<?= esc_attr($custom_url); ?>" <?= $redirect_type === Type::CUSTOM_URL ? '' : 'disabled="disabled"'; ?> data-bc-redirect-value-for-type="<?= esc_attr(Type::CUSTOM_URL); ?>" style="width: 20em; max-width: 100%;" />
-            </p>
-
+            <?php
+                foreach ($redirects as $type_id => $redirect) {
+                    echo '<div data-bc-page-redirect-type-data="' . esc_attr($type_id) . '">';
+                    if ($current_redirect_type_id === $type_id) {
+                        $current_redirect->printFormFields();
+                    } else {
+                        $redirect->printFormFields();
+                    }
+                    echo '</div>';
+                }
+            ?>
         </div>
         <?php
     }
@@ -184,60 +164,12 @@ class MetaBox
             return;
         }
 
-        // Save redirect type, bail on failure.
         $redirect_type = filter_input(INPUT_POST, self::REDIRECT_TYPE_FIELD_NAME, FILTER_SANITIZE_STRING);
 
-        if (!Persistence::setRedirectType($post_id, $redirect_type)) {
-            return;
+        if (is_object($redirect = RedirectFactory::getRedirect($redirect_type))) {
+            $redirect->readFormInputData(INPUT_POST);
         }
 
-        // Save redirect value.
-        switch ($redirect_type) {
-            case Type::FIRST_SUBPAGE:
-                $redirect_value = true;
-                break;
-            case Type::CUSTOM_PAGE:
-                $redirect_value = filter_input(INPUT_POST, self::REDIRECT_VALUE_FIELD_NAME, FILTER_VALIDATE_INT);
-                break;
-            case Type::CUSTOM_URL:
-                $redirect_value = filter_input(INPUT_POST, self::REDIRECT_VALUE_FIELD_NAME, FILTER_VALIDATE_URL);
-                break;
-            default:
-                $redirect_value = null;
-        }
-
-        Persistence::setRedirectValue($post_id, $redirect_type, $redirect_value);
-    }
-
-
-    /**
-     * @param array $non_indexed
-     * @return array
-     */
-    private static function indexPostsById(array $non_indexed): array
-    {
-        $indexed = [];
-        foreach ($non_indexed as $post) {
-            $indexed[$post->ID] = $post;
-        }
-        return $indexed;
-    }
-
-
-    /**
-     * @todo Recursive implementation is straight-forward and nice, but may be inefficient for site with a lot of pages.
-     *
-     * @param \WP_Post $page
-     * @param array $pages
-     * @param string $character
-     * @return string
-     */
-    private static function indent(\WP_Post $page, array $pages, string $character = '-'): string
-    {
-        if (empty($parent_id = $page->post_parent) || !isset($pages[$parent_id])) {
-            return '';
-        }
-
-        return $character . self::indent($pages[$parent_id], $pages, $character);
+        Persistence::setRedirect($post_id, $redirect);
     }
 }
