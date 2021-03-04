@@ -8,7 +8,7 @@
  * Author URI: https://www.chesio.com
  * Requires PHP: 7.1
  * Requires WP: 4.9
- * Tested up to: 4.9
+ * Tested up to: 5.6
  * Text Domain: bc-page-redirect
  * GitHub Plugin URI: https://github.com/chesio/bc-page-redirect
  */
