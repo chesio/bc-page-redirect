@@ -19,6 +19,10 @@ Just install and activate the plugin, there is no configuration.
 
 After activation, you can let every page redirect to its first subpage, another page or custom URL.
 
+### Integration with default XML sitemap
+
+Any pages with an active redirect are automatically excluded from [default WordPress XML sitemap](https://make.wordpress.org/core/2020/07/22/new-xml-sitemaps-functionality-in-wordpress-5-5/).
+
 ## Credits
 
 1. The plugin is inspired by "Shortcut" feature from [TYPO3](https://typo3.org/) CMS.
