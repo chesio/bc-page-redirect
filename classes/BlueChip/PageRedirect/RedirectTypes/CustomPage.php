@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\PageRedirect\RedirectTypes;
 
 /**
@@ -45,7 +47,7 @@ class CustomPage extends \BlueChip\PageRedirect\AbstractRedirect
     protected function sanitize(array $data): array
     {
         return [
-            'page_id' => isset($data['page_id']) ? intval($data['page_id']) : 0,
+            'page_id' => intval($data['page_id'] ?? 0),
         ];
     }
 
@@ -87,10 +89,6 @@ class CustomPage extends \BlueChip\PageRedirect\AbstractRedirect
     }
 
 
-    /**
-     * @param array $non_indexed
-     * @return array
-     */
     private static function indexPostsById(array $non_indexed): array
     {
         $indexed = [];
@@ -103,11 +101,6 @@ class CustomPage extends \BlueChip\PageRedirect\AbstractRedirect
 
     /**
      * @todo Recursive implementation is straight-forward and nice, but may be inefficient for site with a lot of pages.
-     *
-     * @param \WP_Post $page
-     * @param array $pages
-     * @param string $character
-     * @return string
      */
     private static function indent(\WP_Post $page, array $pages, string $character = '-'): string
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\PageRedirect;
 
 class MetaBox
@@ -21,24 +23,16 @@ class MetaBox
 
 
     /**
-     * @var string Absolute path to main plugin file.
-     */
-    private $plugin_filename;
-
-
-    /**
      * @param string $plugin_filename Absolute path to main plugin file.
      */
-    public function __construct(string $plugin_filename)
-    {
-        $this->plugin_filename = $plugin_filename;
-    }
+    public function __construct(private string $plugin_filename)
+    {}
 
 
     /**
      * Initialize meta-box integration.
      */
-    public function init()
+    public function init(): void
     {
         // Init meta box in appropriate action
         add_action("add_meta_boxes_page", [$this, 'addBox']);
@@ -53,7 +47,7 @@ class MetaBox
     /**
      * @hook https://developer.wordpress.org/reference/hooks/add_meta_boxes_post_type/
      */
-    public function addBox()
+    public function addBox(): void
     {
         add_meta_box(
             'bc-page-redirect', // id
@@ -65,10 +59,7 @@ class MetaBox
     }
 
 
-    /**
-     * @param \WP_Post $post
-     */
-    public function printBox(\WP_Post $post)
+    public function printBox(\WP_Post $post): void
     {
         wp_nonce_field(self::NONCE_ACTION, self::NONCE_NAME);
 
@@ -109,7 +100,7 @@ class MetaBox
     /**
      * @hook https://developer.wordpress.org/reference/hooks/load-pagenow/
      */
-    public function loadPost()
+    public function loadPost(): void
     {
         add_action('admin_enqueue_scripts', [$this, 'enqueueScripts'], 10, 0);
     }
@@ -118,7 +109,7 @@ class MetaBox
     /**
      * @hook https://developer.wordpress.org/reference/hooks/admin_enqueue_scripts/
      */
-    public function enqueueScripts()
+    public function enqueueScripts(): void
     {
         $script_handle = 'bc-page-redirect-meta-box';
         $script_path = 'assets/js/page-redirect-meta-box.js';
@@ -135,11 +126,8 @@ class MetaBox
 
     /**
      * @hook https://developer.wordpress.org/reference/hooks/save_post_post-post_type/
-     *
-     * @param int $post_id
-     * @param \WP_Post $post
      */
-    public function savePost(int $post_id, \WP_Post $post)
+    public function savePost(int $post_id, \WP_Post $post): void
     {
         // Don't save meta boxes for revisions or autosaves.
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE || is_int(wp_is_post_revision($post)) || is_int(wp_is_post_autosave($post))) {

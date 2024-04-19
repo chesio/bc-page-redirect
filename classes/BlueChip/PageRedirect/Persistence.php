@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\PageRedirect;
 
 /**
@@ -26,9 +28,6 @@ abstract class Persistence
 
     /**
      * Get redirect information for given post.
-     *
-     * @param int $post_id
-     * @return null|\BlueChip\PageRedirect\AbstractRedirect
      */
     public static function getRedirect(int $post_id): ?AbstractRedirect
     {
@@ -47,9 +46,6 @@ abstract class Persistence
 
     /**
      * Store redirect information for given post.
-     *
-     * @param int $post_id
-     * @param null|\BlueChip\PageRedirect\AbstractRedirect $redirect
      */
     public static function setRedirect(int $post_id, ?AbstractRedirect $redirect): void
     {

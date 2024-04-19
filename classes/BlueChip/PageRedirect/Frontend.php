@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\PageRedirect;
 
 class Frontend
@@ -7,7 +9,7 @@ class Frontend
     /**
      * Initialize front-end integration.
      */
-    public function init()
+    public function init(): void
     {
         add_action('template_redirect', [$this, 'redirect']);
 

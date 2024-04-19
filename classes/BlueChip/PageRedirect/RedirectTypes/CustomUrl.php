@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\PageRedirect\RedirectTypes;
 
 class CustomUrl extends \BlueChip\PageRedirect\AbstractRedirect

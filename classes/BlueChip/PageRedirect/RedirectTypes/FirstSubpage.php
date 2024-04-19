@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\PageRedirect\RedirectTypes;
 
 class FirstSubpage extends \BlueChip\PageRedirect\AbstractRedirect
@@ -48,7 +50,7 @@ class FirstSubpage extends \BlueChip\PageRedirect\AbstractRedirect
     protected function sanitize(array $data): array
     {
         return [
-            'page_id' => isset($data['page_id']) ? intval($data['page_id']) : 0,
+            'page_id' => intval($data['page_id'] ?? 0),
         ];
     }
 

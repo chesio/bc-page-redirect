@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\PageRedirect;
 
 /**
@@ -22,26 +24,17 @@ abstract class RedirectFactory
      */
     public static function getAll(): array
     {
-        return array_map(
-            function (string $class): AbstractRedirect {
-                return new $class();
-            },
-            self::MAPPING
-        );
+        return array_map(fn (string $class): AbstractRedirect => new $class(), self::MAPPING);
     }
 
 
     /**
-     * @param string $type
-     * @return null|\BlueChip\PageRedirect\AbstractRedirect
+     * Get redirect instance for given $type_id.
      */
-    public static function getRedirect(string $type): ?AbstractRedirect
+    public static function getRedirect(string $type_id): ?AbstractRedirect
     {
-        if (isset(self::MAPPING[$type])) {
-            $class = self::MAPPING[$type];
-            return new $class;
-        } else {
-            return null;
-        }
+        $class = self::MAPPING[$type_id] ?? null;
+
+        return $class ? (new $class) : null;
     }
 }
