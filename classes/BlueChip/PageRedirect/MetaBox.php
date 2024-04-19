@@ -149,7 +149,7 @@ class MetaBox
             return;
         }
 
-        $redirect_type = filter_input(INPUT_POST, self::REDIRECT_TYPE_FIELD_NAME, FILTER_SANITIZE_STRING);
+        $redirect_type = filter_input(INPUT_POST, self::REDIRECT_TYPE_FIELD_NAME);
 
         if (($redirect = RedirectFactory::getRedirect($redirect_type)) !== null) {
             $redirect->readFormInputData(INPUT_POST);
