@@ -1,7 +1,6 @@
 <?php
-/**
- * @package BC_Page_Redirect
- */
+
+declare(strict_types=1);
 
 namespace BlueChip\PageRedirect;
 
@@ -19,7 +18,14 @@ abstract class AbstractRedirect
     /**
      * @var array Redirect data (for calculation of target location)
      */
-    protected $data = [];
+    protected array $data = [];
+
+
+    /**
+     * @param int $post_id ID of post/page with the redirect.
+     */
+    public function __construct(protected int $post_id)
+    {}
 
 
     /**
@@ -83,5 +89,5 @@ abstract class AbstractRedirect
      *
      * @see filter_input()
      */
-    abstract public function readFormInputData(int $input_type);
+    abstract public function readFormInputData(int $input_type): void;
 }

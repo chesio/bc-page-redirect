@@ -1,7 +1,6 @@
 <?php
-/**
- * @package BC_Page_Redirect
- */
+
+declare(strict_types=1);
 
 namespace BlueChip\PageRedirect;
 
@@ -11,30 +10,21 @@ namespace BlueChip\PageRedirect;
 class Plugin
 {
     /**
-     * @var string Absolute path to main plugin file.
-     */
-    private $plugin_filename;
-
-
-    /**
      * Construct the plugin instance.
      *
      * @param string $plugin_filename Absolute path to main plugin file.
      */
-    public function __construct(string $plugin_filename)
-    {
-        $this->plugin_filename = $plugin_filename;
-    }
+    public function __construct(private string $plugin_filename)
+    {}
 
 
     /**
      * Load the plugin by hooking into WordPress actions and filters.
-     * Method should be invoked immediately on plugin load.
      */
-    public function load()
+    public function load(): void
     {
         // Register initialization method.
-        add_action('init', [$this, 'init'], 10, 0);
+        add_action('init', $this->init(...), 10, 0);
     }
 
 
@@ -44,7 +34,7 @@ class Plugin
      *
      * @action https://developer.wordpress.org/reference/hooks/init/
      */
-    public function init()
+    private function init(): void
     {
         if (is_admin()) {
             (new Backend())->init();
@@ -61,7 +51,7 @@ class Plugin
      *
      * @link https://developer.wordpress.org/plugins/the-basics/uninstall-methods/
      */
-    public function uninstall()
+    public function uninstall(): void
     {
         // Clear any persistent data set by plugin.
         Persistence::deleteAll();

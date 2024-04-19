@@ -1,7 +1,6 @@
 <?php
-/**
- * @package BC_Page_Redirect
- */
+
+declare(strict_types=1);
 
 namespace BlueChip\PageRedirect\RedirectTypes;
 
@@ -48,7 +47,7 @@ class CustomPage extends \BlueChip\PageRedirect\AbstractRedirect
     protected function sanitize(array $data): array
     {
         return [
-            'page_id' => isset($data['page_id']) ? intval($data['page_id']) : 0,
+            'page_id' => intval($data['page_id'] ?? 0),
         ];
     }
 
@@ -67,7 +66,7 @@ class CustomPage extends \BlueChip\PageRedirect\AbstractRedirect
                 <label for="bc-page-redirect-custom-page"><?= esc_html('Page to redirect to:', 'bc-page-redirect'); ?></label><br />
                 <select name="<?= self::TARGET_PAGE_FIELD_NAME; ?>" id="bc-page-redirect-custom-page">
                     <?php foreach ($pages as $page_id => $page) { ?>
-                        <option value="<?= esc_attr($page_id); ?>" <?= selected($selected_page_id, $page_id, false); ?>>
+                        <option value="<?= esc_attr($page_id); ?>" <?= selected($selected_page_id, $page_id, false); ?> <?= disabled($this->post_id, $page_id, false); ?>>
                             <?= self::indent($page, $pages); ?> <?= esc_html($page->post_title); ?>
                         </option>
                     <?php } ?>
@@ -90,10 +89,6 @@ class CustomPage extends \BlueChip\PageRedirect\AbstractRedirect
     }
 
 
-    /**
-     * @param array $non_indexed
-     * @return array
-     */
     private static function indexPostsById(array $non_indexed): array
     {
         $indexed = [];
@@ -106,11 +101,6 @@ class CustomPage extends \BlueChip\PageRedirect\AbstractRedirect
 
     /**
      * @todo Recursive implementation is straight-forward and nice, but may be inefficient for site with a lot of pages.
-     *
-     * @param \WP_Post $page
-     * @param array $pages
-     * @param string $character
-     * @return string
      */
     private static function indent(\WP_Post $page, array $pages, string $character = '-'): string
     {

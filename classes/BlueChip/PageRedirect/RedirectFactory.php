@@ -1,7 +1,6 @@
 <?php
-/**
- * @package BC_Page_Redirect
- */
+
+declare(strict_types=1);
 
 namespace BlueChip\PageRedirect;
 
@@ -21,30 +20,23 @@ abstract class RedirectFactory
 
 
     /**
+     * @param int $post_id ID of post/page with the redirect.
+     *
      * @return \BlueChip\PageRedirect\AbstractRedirect[]
      */
-    public static function getAll(): array
+    public static function getAll(int $post_id): array
     {
-        return array_map(
-            function (string $class): AbstractRedirect {
-                return new $class();
-            },
-            self::MAPPING
-        );
+        return array_map(fn (string $class): AbstractRedirect => new $class($post_id), self::MAPPING);
     }
 
 
     /**
-     * @param string $type
-     * @return null|\BlueChip\PageRedirect\AbstractRedirect
+     * Get redirect instance for given $type_id and $post_id.
      */
-    public static function getRedirect(string $type): ?AbstractRedirect
+    public static function getRedirect(string $type_id, int $post_id): ?AbstractRedirect
     {
-        if (isset(self::MAPPING[$type])) {
-            $class = self::MAPPING[$type];
-            return new $class;
-        } else {
-            return null;
-        }
+        $class = self::MAPPING[$type_id] ?? null;
+
+        return $class ? (new $class($post_id)) : null;
     }
 }

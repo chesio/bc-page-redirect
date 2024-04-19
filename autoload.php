@@ -1,14 +1,15 @@
 <?php
+
 /**
  * Register autoloader for classes shipped with the plugin.
- *
- * @package BC_Page_Redirect
  */
+
+declare(strict_types=1);
 
 // Register autoload function
 spl_autoload_register(function (string $class) {
     // Only autoload classes shipped with the plugin.
-    if (strpos($class, 'BlueChip\\PageRedirect') !== 0) {
+    if (!str_starts_with($class, 'BlueChip\\PageRedirect\\')) {
         return;
     }
 

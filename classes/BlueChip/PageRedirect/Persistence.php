@@ -1,7 +1,6 @@
 <?php
-/**
- * @package BC_Page_Redirect
- */
+
+declare(strict_types=1);
 
 namespace BlueChip\PageRedirect;
 
@@ -29,18 +28,18 @@ abstract class Persistence
 
     /**
      * Get redirect information for given post.
-     *
-     * @param int $post_id
-     * @return null|\BlueChip\PageRedirect\AbstractRedirect
      */
     public static function getRedirect(int $post_id): ?AbstractRedirect
     {
-        $raw_redirect = get_post_meta($post_id, self::REDIRECT_META_KEY, true);
+        $raw_redirect = get_post_meta($post_id, self::REDIRECT_META_KEY, true) ?: null;
+        if ($raw_redirect === null) {
+            return null;
+        }
 
-        $redirect_type = isset($raw_redirect['type']) && is_string($raw_redirect['type']) ? $raw_redirect['type'] : '';
+        $redirect_type = is_string($raw_redirect['type'] ?? null) ? $raw_redirect['type'] : '';
 
-        if (is_object($redirect = RedirectFactory::getRedirect($redirect_type))) {
-            $redirect_data = isset($raw_redirect['data']) && is_array($raw_redirect['data']) ? $raw_redirect['data'] : [];
+        if (($redirect = RedirectFactory::getRedirect($redirect_type, $post_id)) !== null) {
+            $redirect_data = is_array($raw_redirect['data'] ?? null) ? $raw_redirect['data'] : [];
             $redirect->setData($redirect_data);
         }
 
@@ -50,13 +49,10 @@ abstract class Persistence
 
     /**
      * Store redirect information for given post.
-     *
-     * @param int $post_id
-     * @param null|\BlueChip\PageRedirect\AbstractRedirect $redirect
      */
     public static function setRedirect(int $post_id, ?AbstractRedirect $redirect): void
     {
-        if (is_object($redirect)) {
+        if ($redirect !== null) {
             update_post_meta($post_id, self::REDIRECT_META_KEY, ['type' => $redirect->getTypeId(), 'data' => $redirect->getData()]);
         } else {
             delete_post_meta($post_id, self::REDIRECT_META_KEY);

@@ -1,7 +1,6 @@
 <?php
-/**
- * @package BC_Page_Redirect
- */
+
+declare(strict_types=1);
 
 namespace BlueChip\PageRedirect;
 
@@ -24,60 +23,51 @@ class MetaBox
 
 
     /**
-     * @var string Absolute path to main plugin file.
-     */
-    private $plugin_filename;
-
-
-    /**
      * @param string $plugin_filename Absolute path to main plugin file.
      */
-    public function __construct(string $plugin_filename)
-    {
-        $this->plugin_filename = $plugin_filename;
-    }
+    public function __construct(private string $plugin_filename)
+    {}
 
 
     /**
      * Initialize meta-box integration.
      */
-    public function init()
+    public function init(): void
     {
         // Init meta box in appropriate action
-        add_action("add_meta_boxes_page", [$this, 'addBox']);
+        add_action("add_meta_boxes_page", $this->addBox(...), 10, 1);
         // On each post save, check if we should save meta box data.
-        add_action("save_post_page", [$this, 'savePost'], 10, 2);
+        add_action("save_post_page", $this->savePost(...), 10, 2);
         // On edit page load, enqueque JS assets etc.
-        add_action('load-post.php', [$this, 'loadPost'], 10, 0);
-        add_action('load-post-new.php', [$this, 'loadPost'], 10, 0);
+        add_action('load-post.php', $this->loadPost(...), 10, 0);
+        add_action('load-post-new.php', $this->loadPost(...), 10, 0);
     }
 
 
     /**
      * @hook https://developer.wordpress.org/reference/hooks/add_meta_boxes_post_type/
      */
-    public function addBox()
+    private function addBox(): void
     {
         add_meta_box(
             'bc-page-redirect', // id
             __('Page redirect', 'bc-page-redirect'), // title
-            [$this, 'printBox'], // callback
+            $this->printBox(...), // callback
             'page', // screen
             'side' // context
         );
     }
 
 
-    /**
-     * @param \WP_Post $post
-     */
-    public function printBox(\WP_Post $post)
+    private function printBox(\WP_Post $post): void
     {
         wp_nonce_field(self::NONCE_ACTION, self::NONCE_NAME);
 
-        $redirects = RedirectFactory::getAll();
-        $current_redirect = Persistence::getRedirect($post->ID);
-        $current_redirect_type_id = is_object($current_redirect) ? $current_redirect->getTypeId() : '';
+        $post_id = $post->ID;
+
+        $redirects = RedirectFactory::getAll($post_id);
+        $current_redirect = Persistence::getRedirect($post_id);
+        $current_redirect_type_id = $current_redirect?->getTypeId() ?: '';
 
         ?>
         <div id="bc-page-redirect-meta-box">
@@ -112,16 +102,16 @@ class MetaBox
     /**
      * @hook https://developer.wordpress.org/reference/hooks/load-pagenow/
      */
-    public function loadPost()
+    private function loadPost(): void
     {
-        add_action('admin_enqueue_scripts', [$this, 'enqueueScripts'], 10, 0);
+        add_action('admin_enqueue_scripts', $this->enqueueScripts(...), 10, 0);
     }
 
 
     /**
      * @hook https://developer.wordpress.org/reference/hooks/admin_enqueue_scripts/
      */
-    public function enqueueScripts()
+    private function enqueueScripts(): void
     {
         $script_handle = 'bc-page-redirect-meta-box';
         $script_path = 'assets/js/page-redirect-meta-box.js';
@@ -138,11 +128,8 @@ class MetaBox
 
     /**
      * @hook https://developer.wordpress.org/reference/hooks/save_post_post-post_type/
-     *
-     * @param int $post_id
-     * @param \WP_Post $post
      */
-    public function savePost(int $post_id, \WP_Post $post)
+    private function savePost(int $post_id, \WP_Post $post): void
     {
         // Don't save meta boxes for revisions or autosaves.
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE || is_int(wp_is_post_revision($post)) || is_int(wp_is_post_autosave($post))) {
@@ -164,9 +151,9 @@ class MetaBox
             return;
         }
 
-        $redirect_type = filter_input(INPUT_POST, self::REDIRECT_TYPE_FIELD_NAME, FILTER_SANITIZE_STRING);
+        $redirect_type = filter_input(INPUT_POST, self::REDIRECT_TYPE_FIELD_NAME);
 
-        if (is_object($redirect = RedirectFactory::getRedirect($redirect_type))) {
+        if (($redirect = RedirectFactory::getRedirect($redirect_type, $post_id)) !== null) {
             $redirect->readFormInputData(INPUT_POST);
         }
 
