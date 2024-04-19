@@ -35,31 +35,31 @@ class MetaBox
     public function init(): void
     {
         // Init meta box in appropriate action
-        add_action("add_meta_boxes_page", [$this, 'addBox']);
+        add_action("add_meta_boxes_page", $this->addBox(...), 10, 1);
         // On each post save, check if we should save meta box data.
-        add_action("save_post_page", [$this, 'savePost'], 10, 2);
+        add_action("save_post_page", $this->savePost(...), 10, 2);
         // On edit page load, enqueque JS assets etc.
-        add_action('load-post.php', [$this, 'loadPost'], 10, 0);
-        add_action('load-post-new.php', [$this, 'loadPost'], 10, 0);
+        add_action('load-post.php', $this->loadPost(...), 10, 0);
+        add_action('load-post-new.php', $this->loadPost(...), 10, 0);
     }
 
 
     /**
      * @hook https://developer.wordpress.org/reference/hooks/add_meta_boxes_post_type/
      */
-    public function addBox(): void
+    private function addBox(): void
     {
         add_meta_box(
             'bc-page-redirect', // id
             __('Page redirect', 'bc-page-redirect'), // title
-            [$this, 'printBox'], // callback
+            $this->printBox(...), // callback
             'page', // screen
             'side' // context
         );
     }
 
 
-    public function printBox(\WP_Post $post): void
+    private function printBox(\WP_Post $post): void
     {
         wp_nonce_field(self::NONCE_ACTION, self::NONCE_NAME);
 
@@ -100,16 +100,16 @@ class MetaBox
     /**
      * @hook https://developer.wordpress.org/reference/hooks/load-pagenow/
      */
-    public function loadPost(): void
+    private function loadPost(): void
     {
-        add_action('admin_enqueue_scripts', [$this, 'enqueueScripts'], 10, 0);
+        add_action('admin_enqueue_scripts', $this->enqueueScripts(...), 10, 0);
     }
 
 
     /**
      * @hook https://developer.wordpress.org/reference/hooks/admin_enqueue_scripts/
      */
-    public function enqueueScripts(): void
+    private function enqueueScripts(): void
     {
         $script_handle = 'bc-page-redirect-meta-box';
         $script_path = 'assets/js/page-redirect-meta-box.js';
@@ -127,7 +127,7 @@ class MetaBox
     /**
      * @hook https://developer.wordpress.org/reference/hooks/save_post_post-post_type/
      */
-    public function savePost(int $post_id, \WP_Post $post): void
+    private function savePost(int $post_id, \WP_Post $post): void
     {
         // Don't save meta boxes for revisions or autosaves.
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE || is_int(wp_is_post_revision($post)) || is_int(wp_is_post_autosave($post))) {
