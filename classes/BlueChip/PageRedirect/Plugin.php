@@ -29,7 +29,6 @@ class Plugin
 
     /**
      * Load the plugin by hooking into WordPress actions and filters.
-     * Method should be invoked immediately on plugin load.
      */
     public function load()
     {

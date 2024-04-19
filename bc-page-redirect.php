@@ -43,8 +43,13 @@ if (version_compare(PHP_VERSION, '8.1', '<')) {
 // Register autoloader for this plugin.
 require_once __DIR__ . '/autoload.php';
 
-// Construct plugin instance.
-$bc_page_redirect = new \BlueChip\PageRedirect\Plugin(__FILE__);
+return call_user_func(function () {
+    // Construct plugin instance.
+    $bc_page_redirect = new \BlueChip\PageRedirect\Plugin(__FILE__);
 
-// Load the plugin.
-$bc_page_redirect->load();
+    // Boot up the plugin after all plugins are loaded.
+    add_action('plugins_loaded', [$bc_page_redirect, 'load'], 10, 0);
+
+    // Return the instance.
+    return $bc_page_redirect;
+});

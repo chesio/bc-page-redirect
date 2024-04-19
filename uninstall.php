@@ -13,7 +13,5 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 // Register autoloader for this plugin.
 require_once __DIR__ . '/autoload.php';
 
-// Construct plugin instance.
-$bc_page_redirect = new \BlueChip\PageRedirect\Plugin(__DIR__ . '/bc-page-redirect.php');
-// Run uninstall actions.
-$bc_page_redirect->uninstall();
+// Construct plugin instance and run uninstall actions.
+(new \BlueChip\PageRedirect\Plugin(__DIR__ . '/bc-page-redirect.php'))->uninstall();
