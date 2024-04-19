@@ -35,7 +35,7 @@ abstract class Persistence
 
         $redirect_type = isset($raw_redirect['type']) && is_string($raw_redirect['type']) ? $raw_redirect['type'] : '';
 
-        if (is_object($redirect = RedirectFactory::getRedirect($redirect_type))) {
+        if (($redirect = RedirectFactory::getRedirect($redirect_type)) !== null) {
             $redirect_data = isset($raw_redirect['data']) && is_array($raw_redirect['data']) ? $raw_redirect['data'] : [];
             $redirect->setData($redirect_data);
         }
@@ -49,7 +49,7 @@ abstract class Persistence
      */
     public static function setRedirect(int $post_id, ?AbstractRedirect $redirect): void
     {
-        if (is_object($redirect)) {
+        if ($redirect !== null) {
             update_post_meta($post_id, self::REDIRECT_META_KEY, ['type' => $redirect->getTypeId(), 'data' => $redirect->getData()]);
         } else {
             delete_post_meta($post_id, self::REDIRECT_META_KEY);

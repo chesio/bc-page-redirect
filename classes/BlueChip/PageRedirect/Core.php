@@ -14,7 +14,7 @@ abstract class Core
      */
     public static function hasRedirect(int $page_id): bool
     {
-        return is_object(Persistence::getRedirect($page_id));
+        return Persistence::getRedirect($page_id) !== null;
     }
 
 
@@ -24,7 +24,7 @@ abstract class Core
      */
     public static function getRedirectName(int $page_id): string
     {
-        return is_object($redirect = Persistence::getRedirect($page_id)) ? $redirect->getShortName() : '';
+        return Persistence::getRedirect($page_id)?->getShortName() ?: '';
     }
 
 
@@ -33,6 +33,6 @@ abstract class Core
      */
     public static function getRedirectLocation(int $page_id): string
     {
-        return is_object($redirect = Persistence::getRedirect($page_id)) ? $redirect->getTargetLocation() : '';
+        return Persistence::getRedirect($page_id)?->getTargetLocation() ?: '';
     }
 }

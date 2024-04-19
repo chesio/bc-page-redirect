@@ -65,7 +65,7 @@ class MetaBox
 
         $redirects = RedirectFactory::getAll();
         $current_redirect = Persistence::getRedirect($post->ID);
-        $current_redirect_type_id = is_object($current_redirect) ? $current_redirect->getTypeId() : '';
+        $current_redirect_type_id = $current_redirect?->getTypeId() ?: '';
 
         ?>
         <div id="bc-page-redirect-meta-box">
@@ -151,7 +151,7 @@ class MetaBox
 
         $redirect_type = filter_input(INPUT_POST, self::REDIRECT_TYPE_FIELD_NAME, FILTER_SANITIZE_STRING);
 
-        if (is_object($redirect = RedirectFactory::getRedirect($redirect_type))) {
+        if (($redirect = RedirectFactory::getRedirect($redirect_type)) !== null) {
             $redirect->readFormInputData(INPUT_POST);
         }
 
