@@ -11,7 +11,7 @@ class Frontend
      */
     public function init(): void
     {
-        add_action('template_redirect', $this->redirect(...), 10, 0);
+        add_action('send_headers', $this->redirect(...), 10, 0);
 
         add_filter('wp_sitemaps_posts_query_args', $this->filterSitemapQueryArgs(...), 10, 1);
     }
@@ -20,12 +20,23 @@ class Frontend
     /**
      * Do a redirect for current request, if applicable, and exit.
      *
-     * @hook https://developer.wordpress.org/reference/hooks/template_redirect/
+     * @hook https://developer.wordpress.org/reference/hooks/send_headers/
      */
     private function redirect()
     {
         // Redirect only works with pages.
-        if (is_page() && !empty($location = Core::getRedirectLocation(get_the_ID())) && wp_redirect($location, 301)) {
+        if (!is_page()) {
+            return;
+        }
+
+        $location = Core::getRedirectLocation(get_the_ID());
+
+        // Redirect needs to have a target location set.
+        if ($location === '') {
+            return;
+        }
+
+        if (wp_redirect($location, 301)) {
             exit;
         }
     }
