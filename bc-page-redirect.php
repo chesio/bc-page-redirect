@@ -12,6 +12,7 @@
  * Tested up to: 6.5
  * Text Domain: bc-page-redirect
  * GitHub Plugin URI: https://github.com/chesio/bc-page-redirect
+ * Update URI: https://github.com/chesio/bc-page-redirect
  */
 
 if (version_compare(PHP_VERSION, '8.1', '<')) {
