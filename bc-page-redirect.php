@@ -7,7 +7,7 @@
  * Author: Česlav Przywara <ceslav@przywara.cz>
  * Author URI: https://www.chesio.com
  * Requires PHP: 8.1
- * Requires WP: 4.9
+ * Requires WP: 6.4
  * Tested up to: 6.5
  * Text Domain: bc-page-redirect
  * GitHub Plugin URI: https://github.com/chesio/bc-page-redirect
