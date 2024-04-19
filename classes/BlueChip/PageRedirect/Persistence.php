@@ -31,12 +31,15 @@ abstract class Persistence
      */
     public static function getRedirect(int $post_id): ?AbstractRedirect
     {
-        $raw_redirect = get_post_meta($post_id, self::REDIRECT_META_KEY, true);
+        $raw_redirect = get_post_meta($post_id, self::REDIRECT_META_KEY, true) ?: null;
+        if ($raw_redirect === null) {
+            return null;
+        }
 
-        $redirect_type = isset($raw_redirect['type']) && is_string($raw_redirect['type']) ? $raw_redirect['type'] : '';
+        $redirect_type = is_string($raw_redirect['type'] ?? null) ? $raw_redirect['type'] : '';
 
-        if (($redirect = RedirectFactory::getRedirect($redirect_type)) !== null) {
-            $redirect_data = isset($raw_redirect['data']) && is_array($raw_redirect['data']) ? $raw_redirect['data'] : [];
+        if (($redirect = RedirectFactory::getRedirect($redirect_type, $post_id)) !== null) {
+            $redirect_data = is_array($raw_redirect['data'] ?? null) ? $raw_redirect['data'] : [];
             $redirect->setData($redirect_data);
         }
 

@@ -20,21 +20,23 @@ abstract class RedirectFactory
 
 
     /**
+     * @param int $post_id ID of post/page with the redirect.
+     *
      * @return \BlueChip\PageRedirect\AbstractRedirect[]
      */
-    public static function getAll(): array
+    public static function getAll(int $post_id): array
     {
-        return array_map(fn (string $class): AbstractRedirect => new $class(), self::MAPPING);
+        return array_map(fn (string $class): AbstractRedirect => new $class($post_id), self::MAPPING);
     }
 
 
     /**
-     * Get redirect instance for given $type_id.
+     * Get redirect instance for given $type_id and $post_id.
      */
-    public static function getRedirect(string $type_id): ?AbstractRedirect
+    public static function getRedirect(string $type_id, int $post_id): ?AbstractRedirect
     {
         $class = self::MAPPING[$type_id] ?? null;
 
-        return $class ? (new $class) : null;
+        return $class ? (new $class($post_id)) : null;
     }
 }

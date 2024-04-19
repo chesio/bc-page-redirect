@@ -22,6 +22,13 @@ abstract class AbstractRedirect
 
 
     /**
+     * @param int $post_id ID of post/page with the redirect.
+     */
+    public function __construct(protected int $post_id)
+    {}
+
+
+    /**
      * @return string ID of redirect type (~ class constant).
      */
     public function getTypeId(): string

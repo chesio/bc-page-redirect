@@ -66,7 +66,7 @@ class CustomPage extends \BlueChip\PageRedirect\AbstractRedirect
                 <label for="bc-page-redirect-custom-page"><?= esc_html('Page to redirect to:', 'bc-page-redirect'); ?></label><br />
                 <select name="<?= self::TARGET_PAGE_FIELD_NAME; ?>" id="bc-page-redirect-custom-page">
                     <?php foreach ($pages as $page_id => $page) { ?>
-                        <option value="<?= esc_attr($page_id); ?>" <?= selected($selected_page_id, $page_id, false); ?>>
+                        <option value="<?= esc_attr($page_id); ?>" <?= selected($selected_page_id, $page_id, false); ?> <?= disabled($this->post_id, $page_id, false); ?>>
                             <?= self::indent($page, $pages); ?> <?= esc_html($page->post_title); ?>
                         </option>
                     <?php } ?>

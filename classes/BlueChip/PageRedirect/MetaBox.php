@@ -63,8 +63,10 @@ class MetaBox
     {
         wp_nonce_field(self::NONCE_ACTION, self::NONCE_NAME);
 
-        $redirects = RedirectFactory::getAll();
-        $current_redirect = Persistence::getRedirect($post->ID);
+        $post_id = $post->ID;
+
+        $redirects = RedirectFactory::getAll($post_id);
+        $current_redirect = Persistence::getRedirect($post_id);
         $current_redirect_type_id = $current_redirect?->getTypeId() ?: '';
 
         ?>
@@ -151,7 +153,7 @@ class MetaBox
 
         $redirect_type = filter_input(INPUT_POST, self::REDIRECT_TYPE_FIELD_NAME);
 
-        if (($redirect = RedirectFactory::getRedirect($redirect_type)) !== null) {
+        if (($redirect = RedirectFactory::getRedirect($redirect_type, $post_id)) !== null) {
             $redirect->readFormInputData(INPUT_POST);
         }
 
