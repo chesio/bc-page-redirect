@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: BC Page Redirect
  * Plugin URI: https://github.com/chesio/bc-page-redirect

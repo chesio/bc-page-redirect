@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Page_Redirect
- */
 
 namespace BlueChip\PageRedirect;
 

@@ -1,8 +1,7 @@
 <?php
+
 /**
  * Perform plugin uninstall.
- *
- * @package BC_Page_Redirect
  */
 
 // If file is not invoked by WordPress, exit.
