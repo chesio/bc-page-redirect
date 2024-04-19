@@ -4,7 +4,7 @@ Let a page redirect to its first subpage, any other page or external URL.
 
 ## Requirements
 
-* [PHP](https://secure.php.net/) 7.1 or newer
+* [PHP](https://secure.php.net/) 8.1 or newer
 * [WordPress](https://wordpress.org/) 4.9 or newer
 
 ## Limitations
